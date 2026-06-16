@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
-import { QueryProvider } from '@/app/_provider/QueryProvider';
-import { AuthProvider } from '@/app/_provider/store/auth-store-provider';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { Providers } from '@/app/providers';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
@@ -22,16 +20,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} h-full antialiased dark`}>
+    <html lang="en" className={`${outfit.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <QueryProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              {children}
-              <Toaster />
-            </TooltipProvider>
-          </AuthProvider>
-        </QueryProvider>
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
