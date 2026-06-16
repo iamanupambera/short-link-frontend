@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useTransition } from 'react';
 import { loginAction } from '@/features/auth/actions/login.action';
 import type { LoginFormValues } from '@/features/auth/schemas/login.schema';

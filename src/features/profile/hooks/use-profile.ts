@@ -1,18 +1,17 @@
+'use client';
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProfileRequest } from '@/features/profile/api/get-profile';
 import { updateProfileRequest } from '@/features/profile/api/update-profile';
 import { updateProfilePictureRequest } from '@/features/profile/api/update-avatar';
-import { queryKeys } from '@/lib/query/query-keys';
-import {
-  useAuthState,
-  useAuthDispatches,
-} from '@/features/auth/store/use-auth';
+import { profileQueryKeys } from '../query-keys';
+import { useAuthState, useAuthDispatches } from '@/features/auth';
 
 export function useProfile() {
   const { accessToken } = useAuthState();
 
   return useQuery({
-    queryKey: queryKeys.auth.profile,
+    queryKey: profileQueryKeys.profile,
     queryFn: () => getProfileRequest({ token: accessToken }),
     enabled: !!accessToken,
   });
@@ -28,7 +27,7 @@ export function useUpdateProfile() {
       updateProfileRequest(input, { token: accessToken }),
     onSuccess: (updatedUser) => {
       updateProfile(updatedUser);
-      queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile });
+      queryClient.invalidateQueries({ queryKey: profileQueryKeys.profile });
     },
   });
 }
@@ -43,7 +42,7 @@ export function useUpdateProfilePicture() {
       updateProfilePictureRequest(body, { token: accessToken }),
     onSuccess: (updatedUser) => {
       updateProfile(updatedUser);
-      queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile });
+      queryClient.invalidateQueries({ queryKey: profileQueryKeys.profile });
     },
   });
 }

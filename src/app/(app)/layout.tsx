@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { DashboardLayout } from '@/components/layouts/dashboard-layout';
+import { DashboardShell } from '@/components/shared/dashboard-shell';
 import { getSession } from '@/lib/auth/session';
 
 export default async function ProtectedLayout({
@@ -13,5 +13,5 @@ export default async function ProtectedLayout({
     redirect('/auth/login');
   }
 
-  return <DashboardLayout user={session.user}>{children}</DashboardLayout>;
+  return <DashboardShell user={session.user}>{children}</DashboardShell>;
 }

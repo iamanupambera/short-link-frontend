@@ -3,9 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { PlusIcon, SearchIcon, Loader2Icon } from 'lucide-react';
-import { LinksTable } from '@/features/links/components/links-table';
-import { useLinks } from '@/features/links/hooks/use-links';
-import type { LinkStatus } from '@/features/links/types/link.types';
+import { LinksTable, useLinks } from '@/features/links';
+import type { LinkStatus } from '@/features/links';
 
 export default function LinksPage() {
   const [search, setSearch] = useState<string | undefined>(undefined);

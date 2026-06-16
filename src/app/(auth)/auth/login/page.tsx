@@ -1,9 +1,9 @@
-import { AuthLayout } from '@/components/layouts/auth-layout';
-import { LoginForm } from '@/features/auth/components/login-form';
+import { AuthShell } from '@/components/shared/auth-shell';
+import { LoginForm } from '@/features/auth';
 
 export default function LoginPage() {
   return (
-    <AuthLayout
+    <AuthShell
       title="Welcome back"
       description="Sign in to manage short links, QR codes, and click analytics."
       switchLabel="New to ShortLink?"
@@ -11,6 +11,6 @@ export default function LoginPage() {
       switchText="Create an account"
     >
       <LoginForm />
-    </AuthLayout>
+    </AuthShell>
   );
 }

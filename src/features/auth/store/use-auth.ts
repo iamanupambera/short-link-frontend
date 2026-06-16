@@ -1,3 +1,5 @@
+'use client';
+
 import { useAuthStore } from '../providers/auth-provider';
 
 export function useAuthState() {

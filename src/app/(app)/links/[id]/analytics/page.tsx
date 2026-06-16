@@ -9,13 +9,13 @@ import {
   Loader2Icon,
 } from 'lucide-react';
 import {
-  BreakdownChart,
   ClicksChart,
-} from '@/features/analytics/components/clicks-chart';
-import { useLinkDetail } from '@/features/links/hooks/use-links';
-import { useLinkAnalytics } from '@/features/analytics/hooks/use-analytics';
+  BreakdownChart,
+  useLinkAnalytics,
+} from '@/features/analytics';
+import type { LinkAnalytics } from '@/features/analytics';
+import { useLinkDetail } from '@/features/links';
 import { formatNumber, getUrlHost } from '@/lib/utils/format';
-import type { LinkAnalytics } from '@/features/analytics/types/analytics.types';
 
 type LinkAnalyticsPageProps = {
   params: Promise<{

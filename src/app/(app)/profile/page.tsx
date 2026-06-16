@@ -1,8 +1,7 @@
 'use client';
 
 import { BadgeCheckIcon, ShieldCheckIcon, Loader2Icon } from 'lucide-react';
-import { ProfileForm } from '@/features/profile/components/profile-form';
-import { useProfile } from '@/features/profile/hooks/use-profile';
+import { ProfileForm, useProfile } from '@/features/profile';
 
 export default function ProfilePage() {
   const { data: user, isLoading, isError } = useProfile();

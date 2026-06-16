@@ -1,6 +1,6 @@
 import { createStore } from 'zustand/vanilla';
 import { devtools, persist } from 'zustand/middleware';
-import { AuthStore } from './types';
+import { AuthStore } from '../types/auth-store.types';
 import { AUTH_STORE_KEY, defaultInitState } from './constants';
 
 export const createAuthStore = () =>

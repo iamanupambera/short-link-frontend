@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-type AuthLayoutProps = {
+type AuthShellProps = {
   title: string;
   description: string;
   switchLabel?: string;
@@ -9,14 +9,14 @@ type AuthLayoutProps = {
   children: React.ReactNode;
 };
 
-export function AuthLayout({
+export function AuthShell({
   title,
   description,
   switchLabel,
   switchHref,
   switchText,
   children,
-}: AuthLayoutProps) {
+}: AuthShellProps) {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(20,184,166,0.16),transparent_28rem),linear-gradient(135deg,#0f172a_0%,#111827_45%,#1c1917_100%)] px-4 py-8 text-white">
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[1fr_430px]">

@@ -1,3 +1,5 @@
+'use client';
+
 import { useAuthState } from '../store/use-auth';
 
 export function useCurrentUser() {

@@ -1,9 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { LinkForm } from '@/features/links/components/link-form';
-import { useCreateLink } from '@/features/links/hooks/use-links';
-import type { FormActionState } from '@/features/auth/types/auth.types';
+import { LinkForm, useCreateLink } from '@/features/links';
+import type { FormActionState } from '@/features/auth';
 import { getErrorMessage } from '@/lib/api/client';
 
 export default function NewLinkPage() {

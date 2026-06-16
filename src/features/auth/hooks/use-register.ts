@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useTransition } from 'react';
 import { registerAction } from '@/features/auth/actions/register.action';
 import type { RegisterFormValues } from '@/features/auth/schemas/register.schema';

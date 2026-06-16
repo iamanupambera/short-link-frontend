@@ -1,9 +1,9 @@
-import { AuthLayout } from '@/components/layouts/auth-layout';
-import { VerifyEmailForm } from '@/features/auth/components/verify-email-form';
+import { AuthShell } from '@/components/shared/auth-shell';
+import { VerifyEmailForm } from '@/features/auth';
 
 export default function VerifyEmailPage() {
   return (
-    <AuthLayout
+    <AuthShell
       title="Verify email"
       description="Request a fresh verification email for your account."
       switchLabel="Already verified?"
@@ -11,6 +11,6 @@ export default function VerifyEmailPage() {
       switchText="Sign in"
     >
       <VerifyEmailForm />
-    </AuthLayout>
+    </AuthShell>
   );
 }

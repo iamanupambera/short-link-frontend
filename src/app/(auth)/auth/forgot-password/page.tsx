@@ -1,9 +1,9 @@
-import { AuthLayout } from '@/components/layouts/auth-layout';
-import { ForgotPasswordForm } from '@/features/auth/components/forgot-password-form';
+import { AuthShell } from '@/components/shared/auth-shell';
+import { ForgotPasswordForm } from '@/features/auth';
 
 export default function ForgotPasswordPage() {
   return (
-    <AuthLayout
+    <AuthShell
       title="Reset password"
       description="Use your account email to receive a reset link."
       switchLabel="Remembered it?"
@@ -11,6 +11,6 @@ export default function ForgotPasswordPage() {
       switchText="Sign in"
     >
       <ForgotPasswordForm />
-    </AuthLayout>
+    </AuthShell>
   );
 }

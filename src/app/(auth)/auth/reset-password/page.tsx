@@ -1,5 +1,5 @@
-import { AuthLayout } from '@/components/layouts/auth-layout';
-import { ResetPasswordForm } from '@/features/auth/components/reset-password-form';
+import { AuthShell } from '@/components/shared/auth-shell';
+import { ResetPasswordForm } from '@/features/auth';
 
 type ResetPasswordPageProps = {
   searchParams: Promise<{
@@ -13,7 +13,7 @@ export default async function ResetPasswordPage({
   const { token = '' } = await searchParams;
 
   return (
-    <AuthLayout
+    <AuthShell
       title="New password"
       description="Choose a strong password for your ShortLink account."
       switchLabel="Go back to"
@@ -21,6 +21,6 @@ export default async function ResetPasswordPage({
       switchText="sign in"
     >
       <ResetPasswordForm token={token} />
-    </AuthLayout>
+    </AuthShell>
   );
 }

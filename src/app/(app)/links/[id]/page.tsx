@@ -10,19 +10,19 @@ import {
   Trash2Icon,
   Loader2Icon,
 } from 'lucide-react';
-import { LinkForm } from '@/features/links/components/link-form';
-import { StatusPill } from '@/features/links/components/status-pill';
-import { CopyShortLinkButton } from '@/features/links/components/copy-short-link-button';
-import { getApiBaseUrl, getErrorMessage } from '@/lib/api/client';
 import {
+  LinkForm,
+  StatusPill,
+  CopyShortLinkButton,
   useLinkDetail,
   useUpdateLink,
   useDeleteLink,
-} from '@/features/links/hooks/use-links';
+} from '@/features/links';
+import type { LinkStatus } from '@/features/links';
+import { getApiBaseUrl, getErrorMessage } from '@/lib/api/client';
 import { formatDate } from '@/lib/utils/date';
 import { formatNumber, getUrlHost } from '@/lib/utils/format';
-import type { FormActionState } from '@/features/auth/types/auth.types';
-import type { LinkStatus } from '@/features/links/types/link.types';
+import type { FormActionState } from '@/features/auth';
 
 type LinkDetailPageProps = {
   params: Promise<{

@@ -7,11 +7,11 @@ import {
   PlusIcon,
   QrCodeIcon,
 } from 'lucide-react';
-import { logoutAction } from '@/features/auth/actions/logout.action';
-import type { User } from '@/features/profile/types/user.types';
+import { logoutAction } from '@/features/auth';
+import type { User } from '@/features/profile';
 import { cn } from '@/lib/utils/cn';
 
-type DashboardLayoutProps = {
+type DashboardShellProps = {
   user: User;
   children: React.ReactNode;
 };
@@ -39,7 +39,7 @@ const navItems = [
   },
 ];
 
-export function DashboardLayout({ user, children }: DashboardLayoutProps) {
+export function DashboardShell({ user, children }: DashboardShellProps) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <div className="grid min-h-screen lg:grid-cols-[260px_1fr]">

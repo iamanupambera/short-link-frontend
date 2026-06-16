@@ -8,10 +8,8 @@ import {
   UsersIcon,
   Loader2Icon,
 } from 'lucide-react';
-import { ClicksChart } from '@/features/analytics/components/clicks-chart';
-import { LinksTable } from '@/features/links/components/links-table';
-import { useDashboardAnalytics } from '@/features/analytics/hooks/use-analytics';
-import { useLinks } from '@/features/links/hooks/use-links';
+import { ClicksChart, useDashboardAnalytics } from '@/features/analytics';
+import { LinksTable, useLinks } from '@/features/links';
 import { formatNumber } from '@/lib/utils/format';
 
 export default function DashboardPage() {

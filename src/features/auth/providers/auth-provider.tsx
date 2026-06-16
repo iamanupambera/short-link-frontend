@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { useStore } from 'zustand';
 import { createAuthStore } from '../store/auth-store';
-import { AuthStore } from '../store/types';
+import { AuthStore } from '../types/auth-store.types';
 import AuthSync from './auth-sync';
 
 export type AuthStoreApi = ReturnType<typeof createAuthStore>;
