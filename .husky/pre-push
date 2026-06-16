@@ -1,0 +1,6 @@
+echo "Running pre-push checks..."
+
+npm run lint
+npm run build
+
+echo "Pre-push checks passed. Pushing to remote..."
