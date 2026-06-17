@@ -8,6 +8,7 @@ import {
 import { createLinkRequest } from '@/features/links/api/create-link';
 import { updateLinkRequest } from '@/features/links/api/update-link';
 import { deleteLinkRequest } from '@/features/links/api/delete-link';
+import { getQrCodeRequest } from '@/features/links/api/get-qrcode';
 import { linksQueryKeys } from '../query-keys';
 import { useAuthState } from '@/features/auth';
 import type {
@@ -74,5 +75,24 @@ export function useDeleteLink() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: linksQueryKeys.all });
     },
+  });
+}
+
+export function useQrCode(id: string | number) {
+  const { accessToken } = useAuthState();
+
+  return useQuery({
+    queryKey: [...linksQueryKeys.detail(id), 'qrcode'],
+    queryFn: async () => {
+      const blob = await getQrCodeRequest(id, { token: accessToken });
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    },
+    enabled: !!accessToken && !!id,
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
   });
 }

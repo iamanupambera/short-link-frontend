@@ -10,6 +10,7 @@ export const apiEndpoints = {
     forgotPassword: '/auth/forgot-password',
     resetPassword: '/auth/reset-password',
     resendVerificationMail: '/auth/resend-verification-mail',
+    verifyMail: '/auth/verify-mail',
   },
   links: {
     base: '/links',

@@ -25,6 +25,20 @@ export function ProfileForm({ user }: ProfileFormProps) {
   const updateProfile = useUpdateProfile();
   const updatePicture = useUpdateProfilePicture();
 
+  const [name, setName] = useState(user.name);
+  const [location, setLocation] = useState(user.location ?? '');
+  const [prevUser, setPrevUser] = useState(user);
+
+  if (
+    user.id !== prevUser.id ||
+    user.name !== prevUser.name ||
+    user.location !== prevUser.location
+  ) {
+    setPrevUser(user);
+    setName(user.name);
+    setLocation(user.location ?? '');
+  }
+
   const [message, setMessage] = useState<{
     status: 'success' | 'error';
     text: string;
@@ -91,7 +105,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
           <Input
             id="name"
             name="name"
-            defaultValue={user.name}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             aria-invalid={Boolean(errors?.name)}
             required
           />
@@ -102,7 +117,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
           <Input
             id="location"
             name="location"
-            defaultValue={user.location ?? ''}
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
           />
         </Field>
         <Field>

@@ -32,3 +32,27 @@ export type LinkAnalytics = {
   countries: BreakdownPoint[];
   referrers: BreakdownPoint[];
 };
+
+export interface ApiDashboardAnalytics {
+  totalLinks: number;
+  totalClicks: number;
+  uniqueVisitors: number;
+  activeLinks?: number;
+  clicksOverTime: TimeSeriesPoint[];
+  topLinks: {
+    id: number;
+    shortCode: string;
+    originalUrl: string;
+    clicks: number;
+  }[];
+}
+
+export interface ApiLinkAnalytics {
+  totalClicks: number;
+  uniqueVisitors: number;
+  clicksOverTime: TimeSeriesPoint[];
+  devices: BreakdownPoint[];
+  browsers: BreakdownPoint[];
+  countries: BreakdownPoint[];
+  referrers: BreakdownPoint[];
+}

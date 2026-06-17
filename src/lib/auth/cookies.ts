@@ -3,7 +3,9 @@
 import {
   getSession as getSecureSession,
   destroySession as destroySecureSession,
+  setSession as setSecureSession,
 } from '@/lib/auth/session';
+import type { AuthSession } from '@/features/auth/types/auth.types';
 
 export async function getSession() {
   const session = await getSecureSession();
@@ -18,4 +20,8 @@ export async function getSession() {
 
 export async function destroySession() {
   await destroySecureSession();
+}
+
+export async function setSession(session: Omit<AuthSession, 'expiresAt'>) {
+  await setSecureSession(session);
 }

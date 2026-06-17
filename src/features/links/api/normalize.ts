@@ -1,4 +1,4 @@
-import { isRecord } from '@/lib/api/client';
+import { isRecord, type ApiRecord } from '@/lib/api/client';
 import type { LinkStatus, ShortLink } from '@/features/links/types/link.types';
 
 export function composeShortUrl(shortCode: string) {
@@ -85,7 +85,7 @@ export function normalizeStatus(value?: string): LinkStatus {
   return 'ACTIVE';
 }
 
-export function readString(record: Record<string, unknown>, keys: string[]) {
+export function readString(record: ApiRecord, keys: string[]) {
   for (const key of keys) {
     const value = record[key];
 
@@ -97,10 +97,7 @@ export function readString(record: Record<string, unknown>, keys: string[]) {
   return undefined;
 }
 
-export function readNullableString(
-  record: Record<string, unknown>,
-  keys: string[],
-) {
+export function readNullableString(record: ApiRecord, keys: string[]) {
   for (const key of keys) {
     const value = record[key];
 
@@ -116,7 +113,7 @@ export function readNullableString(
   return null;
 }
 
-export function readNumber(record: Record<string, unknown>, keys: string[]) {
+export function readNumber(record: ApiRecord, keys: string[]) {
   for (const key of keys) {
     const value = record[key];
 
@@ -132,7 +129,7 @@ export function readNumber(record: Record<string, unknown>, keys: string[]) {
   return undefined;
 }
 
-export function readBoolean(record: Record<string, unknown>, keys: string[]) {
+export function readBoolean(record: ApiRecord, keys: string[]) {
   for (const key of keys) {
     const value = record[key];
 

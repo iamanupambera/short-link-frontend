@@ -6,6 +6,7 @@ export type FormActionState = {
   status: 'idle' | 'success' | 'error';
   message?: string;
   errors?: FieldErrors;
+  email?: string;
 };
 
 export type AuthSession = {
@@ -29,6 +30,7 @@ export type RegisterInput = LoginInput & {
 };
 
 export type ResetPasswordInput = {
-  token: string;
+  email: string;
+  otp: string;
   password: string;
 };

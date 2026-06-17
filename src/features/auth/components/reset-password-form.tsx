@@ -18,13 +18,16 @@ import {
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import type { FormActionState } from '@/features/auth/types/auth.types';
 
 type ResetPasswordFormProps = {
-  token: string;
+  defaultEmail?: string;
 };
 
-export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+export function ResetPasswordForm({
+  defaultEmail = '',
+}: ResetPasswordFormProps) {
   const [serverState, setServerState] = useState<FormActionState>({
     status: 'idle',
   });
@@ -36,7 +39,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     formState: { errors },
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { password: '', confirmPassword: '' },
+    defaultValues: {
+      email: defaultEmail,
+      otp: '',
+      password: '',
+      confirmPassword: '',
+    },
   });
 
   function onSubmit(data: ResetPasswordFormValues) {
@@ -44,8 +52,10 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
     startTransition(async () => {
       const formData = new FormData();
-      formData.set('token', token);
+      formData.set('email', data.email);
+      formData.set('otp', data.otp);
       formData.set('password', data.password);
+      formData.set('confirmPassword', data.confirmPassword);
 
       const result = await resetPasswordAction(serverState, formData);
       setServerState(result);
@@ -56,6 +66,29 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <FormMessage state={serverState} />
       <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            aria-invalid={Boolean(errors.email)}
+            {...register('email')}
+          />
+          <FieldError errors={errors.email ? [errors.email] : undefined} />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="otp">6-digit OTP Code</FieldLabel>
+          <Input
+            id="otp"
+            type="text"
+            placeholder="123456"
+            maxLength={6}
+            aria-invalid={Boolean(errors.otp)}
+            {...register('otp')}
+          />
+          <FieldError errors={errors.otp ? [errors.otp] : undefined} />
+        </Field>
         <Field>
           <FieldLabel htmlFor="password">New password</FieldLabel>
           <PasswordInput
@@ -83,7 +116,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           />
         </Field>
       </FieldGroup>
-      <Button type="submit" className="w-full" disabled={pending || !token}>
+      <Button type="submit" className="w-full" disabled={pending}>
         <KeyRoundIcon />
         {pending ? 'Resetting' : 'Reset password'}
       </Button>

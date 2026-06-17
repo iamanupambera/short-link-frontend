@@ -3,7 +3,7 @@ import { apiEndpoints } from '@/lib/api/endpoints';
 import { readMessage } from './normalize';
 
 export async function resendVerificationRequest(email: string) {
-  const response = await apiRequest<unknown>(
+  const response = await apiRequest<Record<string, never>>(
     apiEndpoints.auth.resendVerificationMail,
     {
       method: 'POST',

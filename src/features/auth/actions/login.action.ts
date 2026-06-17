@@ -30,9 +30,11 @@ export async function loginAction(
   try {
     session = await loginRequest(parsed.data);
   } catch (error) {
+    const message = getErrorMessage(error);
     return {
       status: 'error',
-      message: getErrorMessage(error),
+      message,
+      email: message === 'Email not verified' ? parsed.data.email : undefined,
     };
   }
 

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MailIcon } from 'lucide-react';
@@ -21,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import type { FormActionState } from '../types/auth.types';
 
 export function ForgotPasswordForm() {
+  const router = useRouter();
   const [serverState, setServerState] = useState<FormActionState>({
     status: 'idle',
   });
@@ -29,11 +31,19 @@ export function ForgotPasswordForm() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: '' },
   });
+
+  useEffect(() => {
+    if (serverState.status === 'success') {
+      const email = getValues('email');
+      router.push(`/auth/reset-password?email=${encodeURIComponent(email)}`);
+    }
+  }, [serverState.status, router, getValues]);
 
   function onSubmit(data: ForgotPasswordFormValues) {
     setServerState({ status: 'idle' });

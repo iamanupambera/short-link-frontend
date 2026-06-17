@@ -17,6 +17,7 @@ import {
   useLinkDetail,
   useUpdateLink,
   useDeleteLink,
+  useQrCode,
 } from '@/features/links';
 import type { LinkStatus } from '@/features/links';
 import { getApiBaseUrl, getErrorMessage } from '@/lib/api/client';
@@ -35,6 +36,11 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
   const router = useRouter();
 
   const { data: link, isLoading, isError } = useLinkDetail(id);
+  const {
+    data: qrDataUrl,
+    isLoading: isQrLoading,
+    isError: isQrError,
+  } = useQrCode(id);
   const updateMutation = useUpdateLink(id);
   const deleteMutation = useDeleteLink();
 
@@ -162,10 +168,20 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
         <aside className="space-y-4">
           <section className="rounded-lg border border-slate-200 bg-white p-5">
             <h2 className="text-base font-semibold">QR code</h2>
-            <div className="mt-4 flex aspect-square items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50">
-              <div className="text-center text-sm text-slate-500">
-                QR preview
-              </div>
+            <div className="mt-4 flex aspect-square items-center justify-center rounded-lg border border-slate-200 bg-slate-50 overflow-hidden relative">
+              {isQrLoading ? (
+                <Loader2Icon className="size-6 animate-spin text-teal-600" />
+              ) : isQrError || !qrDataUrl ? (
+                <div className="text-center text-xs text-red-500 px-4">
+                  Failed to load QR code.
+                </div>
+              ) : (
+                <img
+                  src={qrDataUrl}
+                  alt={`QR code for ${link.shortCode}`}
+                  className="size-full object-contain p-2"
+                />
+              )}
             </div>
             <a
               href={qrDownloadUrl}

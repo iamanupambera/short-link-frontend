@@ -9,28 +9,17 @@ export async function resetPasswordAction(
   _state: FormActionState,
   formData: FormData,
 ): Promise<FormActionState> {
-  const token = readFormValue(formData, 'token');
-
   const parsed = resetPasswordSchema.safeParse({
+    email: readFormValue(formData, 'email'),
+    otp: readFormValue(formData, 'otp'),
     password: readFormValue(formData, 'password'),
     confirmPassword: readFormValue(formData, 'confirmPassword'),
   });
 
-  const errors: Record<string, string[]> = {};
-
-  if (!token) {
-    errors.token = ['Reset token is missing.'];
-  }
-
   if (!parsed.success) {
-    const fieldErrors = parsed.error.flatten().fieldErrors;
-    Object.assign(errors, fieldErrors);
-  }
-
-  if (Object.keys(errors).length) {
     return {
       status: 'error',
-      errors,
+      errors: parsed.error.flatten().fieldErrors,
       message: 'Please check the highlighted fields.',
     };
   }
@@ -39,8 +28,9 @@ export async function resetPasswordAction(
     return {
       status: 'success',
       message: await resetPasswordRequest({
-        token,
-        password: parsed.data!.password,
+        email: parsed.data.email,
+        otp: parsed.data.otp,
+        password: parsed.data.password,
       }),
     };
   } catch (error) {

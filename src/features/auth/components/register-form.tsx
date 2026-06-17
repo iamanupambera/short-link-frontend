@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserPlusIcon } from 'lucide-react';
@@ -20,16 +22,27 @@ import {
 import { Input } from '@/components/ui/input';
 
 export function RegisterForm() {
+  const router = useRouter();
   const { register: registerUser, serverState, pending } = useRegister();
 
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
   });
+
+  useEffect(() => {
+    if (serverState.status === 'success') {
+      const email = getValues('email');
+      router.push(
+        `/auth/verify-email?email=${encodeURIComponent(email)}&registered=true`,
+      );
+    }
+  }, [serverState.status, router, getValues]);
 
   function onSubmit(data: RegisterFormValues) {
     registerUser(data);

@@ -56,8 +56,8 @@ export function LinksTable({ links }: LinksTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {links.map((link) => (
-            <TableRow key={link.id}>
+          {links.map((link, index) => (
+            <TableRow key={`${link.id}-${link.shortCode}-${index}`}>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Link

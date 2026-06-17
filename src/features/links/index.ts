@@ -5,6 +5,7 @@ export {
   useCreateLink,
   useUpdateLink,
   useDeleteLink,
+  useQrCode,
 } from './hooks/use-links';
 
 // Components

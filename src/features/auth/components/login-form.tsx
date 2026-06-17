@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
@@ -19,8 +21,10 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { resendVerificationRequest } from '@/features/auth/api/resend-verification';
 
 export function LoginForm() {
+  const router = useRouter();
   const { login, serverState, pending } = useLogin();
 
   const {
@@ -31,6 +35,22 @@ export function LoginForm() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
+
+  useEffect(() => {
+    if (
+      serverState.status === 'error' &&
+      serverState.message?.toLowerCase().includes('email not verified') &&
+      serverState.email
+    ) {
+      // Send fresh OTP code in background
+      resendVerificationRequest(serverState.email).catch(console.error);
+
+      // Redirect immediately to verify-email page
+      router.push(
+        `/auth/verify-email?email=${encodeURIComponent(serverState.email)}&unverified=true`,
+      );
+    }
+  }, [serverState, router]);
 
   function onSubmit(data: LoginFormValues) {
     login(data);

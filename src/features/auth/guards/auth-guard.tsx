@@ -12,12 +12,13 @@ const AuthGuard = () => {
   const redirect = useCallback(
     (path: string, isAuth: boolean) => {
       const isAuthPage = path.includes('auth');
+      const isHomePage = path === '/';
 
       if (isAuthPage && isAuth) {
-        push('/');
+        push('/dashboard');
       }
 
-      if (!isAuthPage && !isAuth) {
+      if (!isAuthPage && !isHomePage && !isAuth) {
         push('/auth/login');
       }
     },

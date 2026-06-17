@@ -4,10 +4,13 @@ import { readMessage } from './normalize';
 import type { ResetPasswordInput } from '../types/auth.types';
 
 export async function resetPasswordRequest(input: ResetPasswordInput) {
-  const response = await apiRequest<unknown>(apiEndpoints.auth.resetPassword, {
-    method: 'POST',
-    body: input,
-  });
+  const response = await apiRequest<Record<string, never>>(
+    apiEndpoints.auth.resetPassword,
+    {
+      method: 'POST',
+      body: input,
+    },
+  );
 
   return readMessage(response) ?? 'Password reset successfully.';
 }

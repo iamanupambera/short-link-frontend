@@ -1,20 +1,27 @@
-import { apiRequest, isRecord, unwrapData } from '@/lib/api/client';
+import {
+  apiRequest,
+  isRecord,
+  unwrapData,
+  type ApiRecord,
+} from '@/lib/api/client';
 import { apiEndpoints } from '@/lib/api/endpoints';
 import { readBreakdown, readNumber, readTimeSeries } from './normalize';
-import type { LinkAnalytics } from '../types/analytics.types';
+import type { LinkAnalytics, ApiLinkAnalytics } from '../types/analytics.types';
 
 export async function getLinkAnalyticsRequest(
   linkId: string | number,
   options?: { token?: string | null },
 ): Promise<LinkAnalytics> {
-  const response = await apiRequest<unknown>(
+  const response = await apiRequest<ApiLinkAnalytics>(
     apiEndpoints.analytics.link(linkId),
     {
       token: options?.token,
     },
   );
-  const payload = unwrapData(response);
-  const record = isRecord(payload) ? payload : {};
+  const payload = unwrapData<ApiLinkAnalytics>(response);
+  const record = (
+    isRecord(payload) ? payload : {}
+  ) as Partial<ApiLinkAnalytics> & ApiRecord;
 
   return {
     totalClicks: readNumber(record, ['totalClicks', 'clicks']) ?? 0,

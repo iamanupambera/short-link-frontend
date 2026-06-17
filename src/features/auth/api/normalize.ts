@@ -1,21 +1,33 @@
-import { isRecord, unwrapData } from '@/lib/api/client';
+import {
+  isRecord,
+  unwrapData,
+  type ApiResponse,
+  type ApiRecord,
+} from '@/lib/api/client';
 import type { AuthSession } from '@/features/auth/types/auth.types';
 import type {
   User,
   UserRole,
   UserStatus,
 } from '@/features/profile/types/user.types';
+import type { LoginResponse } from './login';
 
-export function normalizeAuthSession(response: unknown): AuthSession {
-  const payload = unwrapData(response);
-  const record = isRecord(payload) ? payload : {};
-  const tokenSource = isRecord(record.tokens) ? record.tokens : record;
+export function normalizeAuthSession(
+  response: ApiResponse<LoginResponse> | unknown,
+): AuthSession {
+  const payload = unwrapData<LoginResponse>(response);
+  const record = (isRecord(payload) ? payload : {}) as ApiRecord;
+  const tokenSource = isRecord(record['tokens'])
+    ? (record['tokens'] as ApiRecord)
+    : record;
   const accessToken = readString(tokenSource, [
     'accessToken',
     'access_token',
     'token',
   ]);
-  const userSource = isRecord(record.user) ? record.user : record;
+  const userSource = isRecord(record['user'])
+    ? (record['user'] as ApiRecord)
+    : record;
 
   if (!accessToken) {
     throw new Error('Login response did not include an access token.');
@@ -69,7 +81,7 @@ export function readMessage(value: unknown) {
   return isRecord(payload) ? readString(payload, ['message']) : undefined;
 }
 
-export function readString(record: Record<string, unknown>, keys: string[]) {
+export function readString(record: ApiRecord, keys: string[]) {
   for (const key of keys) {
     const value = record[key];
 
@@ -81,10 +93,7 @@ export function readString(record: Record<string, unknown>, keys: string[]) {
   return undefined;
 }
 
-export function readNullableString(
-  record: Record<string, unknown>,
-  keys: string[],
-) {
+export function readNullableString(record: ApiRecord, keys: string[]) {
   for (const key of keys) {
     const value = record[key];
 
@@ -100,7 +109,7 @@ export function readNullableString(
   return null;
 }
 
-export function readNumber(record: Record<string, unknown>, keys: string[]) {
+export function readNumber(record: ApiRecord, keys: string[]) {
   for (const key of keys) {
     const value = record[key];
 
@@ -116,7 +125,7 @@ export function readNumber(record: Record<string, unknown>, keys: string[]) {
   return undefined;
 }
 
-export function readBoolean(record: Record<string, unknown>, keys: string[]) {
+export function readBoolean(record: ApiRecord, keys: string[]) {
   for (const key of keys) {
     const value = record[key];
 

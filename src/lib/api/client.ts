@@ -9,13 +9,21 @@ export class ApiError extends Error {
   }
 }
 
-type QueryValue = string | number | boolean | null | undefined;
+export type QueryValue = string | number | boolean | null | undefined;
 
-type ApiRequestOptions = Omit<RequestInit, 'body'> & {
-  body?: BodyInit | Record<string, unknown>;
-  query?: Record<string, QueryValue>;
+export interface ApiRecord {
+  [key: string]: unknown;
+}
+
+export interface QueryParams {
+  [key: string]: QueryValue;
+}
+
+export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
+  body?: BodyInit | ApiRecord;
+  query?: QueryParams;
   token?: string | null;
-};
+}
 
 export function getApiBaseUrl() {
   return (
@@ -25,20 +33,45 @@ export function getApiBaseUrl() {
   ).replace(/\/$/, '');
 }
 
-export async function apiRequest<T>(
+export interface ApiResponse<T = unknown> {
+  statusCode: number;
+  response: T;
+  message: string;
+  headers?: Headers;
+}
+
+export async function apiRequest<T = unknown>(
   path: string,
   { body, headers, query, token, ...init }: ApiRequestOptions = {},
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   const requestHeaders = new Headers(headers);
   const requestUrl = buildUrl(path, query);
   const requestInit: RequestInit = {
     ...init,
     headers: requestHeaders,
     cache: init.cache ?? 'no-store',
+    credentials: init.credentials ?? 'include',
   };
 
   if (token) {
     requestHeaders.set('Authorization', `Bearer ${token}`);
+  }
+
+  // Forward incoming browser request cookies to backend if on the server
+  if (typeof window === 'undefined') {
+    try {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      const cookieHeader = cookieStore
+        .getAll()
+        .map((c) => `${c.name}=${c.value}`)
+        .join('; ');
+      if (cookieHeader) {
+        requestHeaders.set('Cookie', cookieHeader);
+      }
+    } catch {
+      // Ignored outside of request context (e.g. static generation)
+    }
   }
 
   if (body !== undefined) {
@@ -61,7 +94,69 @@ export async function apiRequest<T>(
     );
   }
 
-  return payload as T;
+  // Forward Set-Cookie response headers from backend to browser if on the server
+  if (typeof window === 'undefined') {
+    try {
+      const setCookies = response.headers.getSetCookie?.() || [];
+      if (setCookies.length > 0) {
+        const { cookies } = await import('next/headers');
+        const cookieStore = await cookies();
+        for (const setCookieStr of setCookies) {
+          const parts = setCookieStr.split(';').map((p) => p.trim());
+          if (parts.length === 0) continue;
+
+          const [nameValue, ...directives] = parts;
+          const eqIdx = nameValue.indexOf('=');
+          if (eqIdx === -1) continue;
+
+          const name = nameValue.slice(0, eqIdx);
+          const value = nameValue.slice(eqIdx + 1);
+
+          const options: {
+            path?: string;
+            httpOnly?: boolean;
+            secure?: boolean;
+            sameSite?: 'lax' | 'strict' | 'none';
+            expires?: Date;
+            maxAge?: number;
+          } = { path: '/' };
+
+          for (const directive of directives) {
+            const lower = directive.toLowerCase();
+            if (lower === 'httponly') {
+              options.httpOnly = true;
+            } else if (lower === 'secure') {
+              options.secure = true;
+            } else if (lower.startsWith('path=')) {
+              options.path = directive.slice(5);
+            } else if (lower.startsWith('samesite=')) {
+              const val = directive.slice(9).toLowerCase();
+              options.sameSite =
+                val === 'lax'
+                  ? 'lax'
+                  : val === 'strict'
+                    ? 'strict'
+                    : val === 'none'
+                      ? 'none'
+                      : undefined;
+            } else if (lower.startsWith('expires=')) {
+              options.expires = new Date(directive.slice(8));
+            } else if (lower.startsWith('max-age=')) {
+              options.maxAge = parseInt(directive.slice(8), 10);
+            }
+          }
+          cookieStore.set(name, value, options);
+        }
+      }
+    } catch {
+      // Ignored outside of request context
+    }
+  }
+
+  return {
+    ...(isRecord(payload) ? payload : {}),
+    headers: response.headers,
+  } as ApiResponse<T>;
 }
 
 export function getErrorMessage(error: unknown, response?: Response) {
@@ -84,19 +179,24 @@ export function getErrorMessage(error: unknown, response?: Response) {
   return response?.statusText || 'Something went wrong. Please try again.';
 }
 
-export function unwrapData(value: unknown): unknown {
-  if (isRecord(value) && 'data' in value) {
-    return value.data;
+export function unwrapData<T>(value: ApiResponse<T> | unknown): T {
+  if (isRecord(value)) {
+    if ('response' in value) {
+      return value.response as T;
+    }
+    if ('data' in value) {
+      return value.data as T;
+    }
   }
 
-  return value;
+  return value as T;
 }
 
-export function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is ApiRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function buildUrl(path: string, query?: Record<string, QueryValue>) {
+function buildUrl(path: string, query?: QueryParams) {
   const baseUrl = getApiBaseUrl();
   const url = new URL(`${baseUrl}${path.startsWith('/') ? path : `/${path}`}`);
 
@@ -133,6 +233,6 @@ async function readPayload(response: Response) {
   }
 }
 
-function isPlainObject(value: unknown): value is Record<string, unknown> {
+function isPlainObject(value: unknown): value is ApiRecord {
   return Object.prototype.toString.call(value) === '[object Object]';
 }

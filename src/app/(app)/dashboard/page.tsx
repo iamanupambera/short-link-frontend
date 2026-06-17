@@ -65,19 +65,11 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-normal">Dashboard</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Overview of link activity and recent destinations.
-          </p>
-        </div>
-        <Link
-          href="/links/new"
-          className="inline-flex h-9 items-center justify-center rounded-lg bg-teal-600 px-3 text-sm font-medium text-white transition-colors hover:bg-teal-700"
-        >
-          Create short link
-        </Link>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-normal">Dashboard</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Overview of link activity and recent destinations.
+        </p>
       </div>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -123,9 +115,9 @@ export default function DashboardPage() {
           </div>
           <div className="space-y-3">
             {dashboardAnalytics.topLinks.length ? (
-              dashboardAnalytics.topLinks.map((link) => (
+              dashboardAnalytics.topLinks.map((link, index) => (
                 <Link
-                  key={link.id}
+                  key={`${link.id}-${link.shortCode}-${index}`}
                   href={`/links/${link.id}/analytics`}
                   className="block rounded-lg border border-slate-200 p-3 transition-colors hover:bg-slate-50"
                 >

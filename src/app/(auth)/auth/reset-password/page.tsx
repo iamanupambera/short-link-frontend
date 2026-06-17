@@ -3,14 +3,14 @@ import { ResetPasswordForm } from '@/features/auth';
 
 type ResetPasswordPageProps = {
   searchParams: Promise<{
-    token?: string;
+    email?: string;
   }>;
 };
 
 export default async function ResetPasswordPage({
   searchParams,
 }: ResetPasswordPageProps) {
-  const { token = '' } = await searchParams;
+  const { email = '' } = await searchParams;
 
   return (
     <AuthShell
@@ -20,7 +20,7 @@ export default async function ResetPasswordPage({
       switchHref="/auth/login"
       switchText="sign in"
     >
-      <ResetPasswordForm token={token} />
+      <ResetPasswordForm defaultEmail={email} />
     </AuthShell>
   );
 }

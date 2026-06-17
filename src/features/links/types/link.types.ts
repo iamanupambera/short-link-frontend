@@ -39,3 +39,25 @@ export type LinkListResponse = {
   links: ShortLink[];
   total: number;
 };
+
+export interface ApiLink {
+  id: number;
+  userId: number;
+  originalUrl: string;
+  shortCode: string;
+  customAlias: string | null;
+  passwordHash: string | null;
+  expiresAt: string | null;
+  status: LinkStatus;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface ApiPaginationResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+}

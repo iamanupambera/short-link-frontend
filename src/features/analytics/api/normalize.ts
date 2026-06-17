@@ -47,7 +47,7 @@ export function readTopLinks(value: unknown): DashboardAnalytics['topLinks'] {
     const record = isRecord(item) ? item : {};
 
     return {
-      id: readNumber(record, ['id']) ?? 0,
+      id: readNumber(record, ['id', 'linkId', 'link_id']) ?? 0,
       shortCode: readString(record, ['shortCode', 'short_code']) ?? '',
       originalUrl: readString(record, ['originalUrl', 'original_url']) ?? '',
       clicks: readNumber(record, ['clicks', 'totalClicks']) ?? 0,
