@@ -111,15 +111,15 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <StatusPill status={link.status} />
             {link.isPasswordProtected ? (
-              <span className="inline-flex h-6 items-center rounded-full border border-blue-200 bg-blue-50 px-2 text-xs font-medium text-blue-700">
+              <span className="inline-flex h-6 items-center rounded-full border border-blue-950/30 bg-blue-950/10 px-2 text-xs font-medium text-blue-400">
                 protected
               </span>
             ) : null}
           </div>
-          <h1 className="truncate text-2xl font-semibold tracking-normal">
+          <h1 className="truncate text-2xl font-semibold tracking-normal text-white">
             /{link.shortCode}
           </h1>
-          <p className="mt-1 truncate text-sm text-slate-500">
+          <p className="mt-1 truncate text-sm text-muted-foreground">
             {getUrlHost(link.originalUrl)}
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
           <CopyShortLinkButton value={link.shortUrl ?? ''} />
           <Link
             href={`/links/${link.id}/analytics`}
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <BarChart3Icon className="size-4" />
             Analytics
@@ -136,7 +136,7 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
             href={link.shortUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-slate-950 px-3 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-teal-600 px-3 text-sm font-medium text-white transition-colors hover:bg-teal-500"
           >
             <ExternalLinkIcon className="size-4" />
             Open
@@ -155,10 +155,12 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
       </section>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <section className="rounded-lg border border-slate-200 bg-white p-5">
+        <section className="rounded-lg border border-border bg-card p-5">
           <div className="mb-5">
-            <h2 className="text-base font-semibold">Link settings</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="text-base font-semibold text-white">
+              Link settings
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               Update destination, alias, expiration, password, or status.
             </p>
           </div>
@@ -166,9 +168,9 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
         </section>
 
         <aside className="space-y-4">
-          <section className="rounded-lg border border-slate-200 bg-white p-5">
-            <h2 className="text-base font-semibold">QR code</h2>
-            <div className="mt-4 flex aspect-square items-center justify-center rounded-lg border border-slate-200 bg-slate-50 overflow-hidden relative">
+          <section className="rounded-lg border border-border bg-card p-5">
+            <h2 className="text-base font-semibold text-white">QR code</h2>
+            <div className="mt-4 flex aspect-square items-center justify-center rounded-lg border border-border bg-slate-950/30 overflow-hidden relative">
               {isQrLoading ? (
                 <Loader2Icon className="size-6 animate-spin text-teal-600" />
               ) : isQrError || !qrDataUrl ? (
@@ -185,18 +187,18 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
             </div>
             <a
               href={qrDownloadUrl}
-              className="mt-4 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 text-sm font-medium transition-colors hover:bg-slate-50"
+              className="mt-4 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-lg border border-border px-3 text-sm font-medium transition-colors hover:bg-accent text-muted-foreground hover:text-foreground"
             >
               <DownloadIcon className="size-4" />
               Download PNG
             </a>
           </section>
 
-          <section className="rounded-lg border border-red-200 bg-red-50 p-5">
-            <h2 className="text-base font-semibold text-red-950">
+          <section className="rounded-lg border border-red-950/30 bg-red-950/5 p-5">
+            <h2 className="text-base font-semibold text-red-400">
               Delete link
             </h2>
-            <p className="mt-1 text-sm text-red-700">
+            <p className="mt-1 text-sm text-red-400/80">
               Delete this short URL and its dashboard listing.
             </p>
             <form onSubmit={handleDelete} className="mt-4">
@@ -218,9 +220,11 @@ export default function LinkDetailPage({ params }: LinkDetailPageProps) {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4">
-      <div className="text-sm text-slate-500">{label}</div>
-      <div className="mt-2 truncate text-lg font-semibold">{value}</div>
+    <div className="rounded-lg border border-border bg-card p-4">
+      <div className="text-sm text-muted-foreground">{label}</div>
+      <div className="mt-2 truncate text-lg font-semibold text-white">
+        {value}
+      </div>
     </div>
   );
 }

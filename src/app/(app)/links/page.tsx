@@ -30,14 +30,16 @@ export default function LinksPage() {
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl font-semibold tracking-normal">Links</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold tracking-normal text-white">
+            Links
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Search, filter, and manage destinations.
           </p>
         </div>
         <Link
           href="/links/new"
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-teal-600 px-3 text-sm font-medium text-white transition-colors hover:bg-teal-700"
+          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-teal-600 px-3 text-sm font-medium text-white transition-colors hover:bg-teal-500"
         >
           <PlusIcon className="size-4" />
           New link
@@ -46,29 +48,37 @@ export default function LinksPage() {
 
       <form
         onSubmit={handleFilterSubmit}
-        className="grid gap-3 rounded-lg border border-slate-200 bg-white p-3 md:grid-cols-[1fr_180px_auto]"
+        className="grid gap-3 rounded-lg border border-border bg-card p-3 md:grid-cols-[1fr_180px_auto]"
       >
         <label className="relative">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-slate-400" />
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
           <input
             name="search"
             placeholder="Search links"
-            className="h-9 w-full rounded-lg border border-slate-200 bg-white pr-3 pl-8 text-sm outline-none focus:border-teal-500 focus:ring-3 focus:ring-teal-100"
+            className="h-9 w-full rounded-lg border border-border bg-background pr-3 pl-8 text-sm text-foreground outline-none focus:border-teal-500 focus:ring-3 focus:ring-teal-950/20"
           />
         </label>
         <select
           name="status"
           defaultValue="ALL"
-          className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-teal-500 focus:ring-3 focus:ring-teal-100"
+          className="h-9 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-teal-500 focus:ring-3 focus:ring-teal-950/20"
         >
-          <option value="ALL">All statuses</option>
-          <option value="ACTIVE">Active</option>
-          <option value="INACTIVE">Inactive</option>
-          <option value="EXPIRED">Expired</option>
+          <option value="ALL" className="bg-slate-900">
+            All statuses
+          </option>
+          <option value="ACTIVE" className="bg-slate-900">
+            Active
+          </option>
+          <option value="INACTIVE" className="bg-slate-900">
+            Inactive
+          </option>
+          <option value="EXPIRED" className="bg-slate-900">
+            Expired
+          </option>
         </select>
         <button
           type="submit"
-          className="inline-flex h-9 items-center justify-center rounded-lg bg-slate-950 px-4 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+          className="inline-flex h-9 items-center justify-center rounded-lg bg-slate-800 px-4 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700"
         >
           Apply
         </button>

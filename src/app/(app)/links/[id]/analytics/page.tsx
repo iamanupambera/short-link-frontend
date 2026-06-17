@@ -53,9 +53,12 @@ export default function LinkAnalyticsPage({ params }: LinkAnalyticsPageProps) {
 
   if (isLinkError || !link) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center text-red-700">
+      <div className="rounded-lg border border-red-950/30 bg-red-950/10 p-6 text-center text-red-400">
         <p className="font-medium">Link not found or failed to load.</p>
-        <Link href="/links" className="mt-2 inline-block text-sm underline">
+        <Link
+          href="/links"
+          className="mt-2 inline-block text-sm underline text-white"
+        >
           Back to links
         </Link>
       </div>
@@ -69,15 +72,15 @@ export default function LinkAnalyticsPage({ params }: LinkAnalyticsPageProps) {
       <div>
         <Link
           href={`/links/${link.id}`}
-          className="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-950"
+          className="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-white"
         >
           <ArrowLeftIcon className="size-4" />
           Back to link
         </Link>
-        <h1 className="text-2xl font-semibold tracking-normal">
+        <h1 className="text-2xl font-semibold tracking-normal text-white">
           Analytics for /{link.shortCode}
         </h1>
-        <p className="mt-1 truncate text-sm text-slate-500">
+        <p className="mt-1 truncate text-sm text-muted-foreground">
           {getUrlHost(link.originalUrl)}
         </p>
       </div>
@@ -87,20 +90,22 @@ export default function LinkAnalyticsPage({ params }: LinkAnalyticsPageProps) {
           label="Total clicks"
           value={formatNumber(activeAnalytics.totalClicks)}
           icon={<MousePointerClickIcon className="size-4" />}
-          tone="bg-teal-50 text-teal-700"
+          tone="bg-teal-950/20 text-teal-400"
         />
         <Metric
           label="Unique visitors"
           value={formatNumber(activeAnalytics.uniqueVisitors)}
           icon={<UsersIcon className="size-4" />}
-          tone="bg-amber-50 text-amber-700"
+          tone="bg-amber-950/20 text-amber-400"
         />
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-4">
+      <section className="rounded-lg border border-border bg-card p-4">
         <div className="mb-4">
-          <h2 className="text-base font-semibold">Clicks over time</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <h2 className="text-base font-semibold text-white">
+            Clicks over time
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Daily clicks and unique visitors for this link.
           </p>
         </div>
@@ -129,16 +134,16 @@ function Metric({
   tone: string;
 }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-slate-500">{label}</span>
+        <span className="text-sm text-muted-foreground">{label}</span>
         <span
           className={`flex size-8 items-center justify-center rounded-lg ${tone}`}
         >
           {icon}
         </span>
       </div>
-      <div className="mt-4 text-3xl font-semibold">{value}</div>
+      <div className="mt-4 text-3xl font-semibold text-white">{value}</div>
     </div>
   );
 }
@@ -151,14 +156,14 @@ function BreakdownPanel({
   data: LinkAnalytics['devices'];
 }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="mb-4">
-        <h2 className="text-base font-semibold">{title}</h2>
+        <h2 className="text-base font-semibold text-white">{title}</h2>
       </div>
       {data.length ? (
         <BreakdownChart data={data} />
       ) : (
-        <p className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">
+        <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
           No data yet.
         </p>
       )}

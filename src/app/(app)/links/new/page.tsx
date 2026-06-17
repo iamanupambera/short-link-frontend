@@ -39,12 +39,14 @@ export default function NewLinkPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-normal">New link</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-semibold tracking-normal text-white">
+          New link
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Create a short URL with optional alias, expiration, and password.
         </p>
       </div>
-      <section className="rounded-lg border border-slate-200 bg-white p-5">
+      <section className="rounded-lg border border-border bg-card p-5">
         <LinkForm mode="create" action={handleCreate} />
       </section>
     </div>

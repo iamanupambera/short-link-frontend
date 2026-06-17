@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Link2Icon } from 'lucide-react';
 
 type AuthShellProps = {
   title: string;
@@ -21,9 +22,13 @@ export function AuthShell({
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(20,184,166,0.16),transparent_28rem),linear-gradient(135deg,#0f172a_0%,#111827_45%,#1c1917_100%)] px-4 py-8 text-white">
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[1fr_430px]">
         <section className="max-w-2xl">
-          <div className="mb-8 inline-flex h-9 items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 text-sm font-medium">
-            <span className="size-2 rounded-full bg-teal-300" />
-            ShortLink
+          <div className="mb-8 flex items-center gap-2">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-gradient-to-tr from-teal-500 to-cyan-500 text-slate-950 shadow-md">
+              <Link2Icon className="size-5 font-bold" />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-white">
+              ShortLink
+            </span>
           </div>
           <h1 className="text-4xl font-semibold tracking-normal text-balance sm:text-5xl">
             Shorten. Share. Track.

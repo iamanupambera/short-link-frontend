@@ -8,7 +8,7 @@ import {
   CircleUserRoundIcon,
   LinkIcon,
   LogOutIcon,
-  QrCodeIcon,
+  Link2Icon,
   MenuIcon,
   XIcon,
 } from 'lucide-react';
@@ -56,17 +56,19 @@ const SidebarContent = ({
   setIsCollapsed: (collapsed: boolean) => void;
 }) => {
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-card">
       {/* Sidebar Header */}
-      <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
+      <div className="flex h-16 items-center justify-between border-b border-border px-5">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-teal-600 text-white">
-            <QrCodeIcon className="size-4" />
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-teal-500 to-cyan-500 text-slate-950 shadow-md animate-in zoom-in-50 duration-300">
+            <Link2Icon className="size-5 font-bold" />
           </div>
           {!collapsed && (
             <div className="min-w-0 animate-in fade-in duration-300">
-              <div className="text-sm font-semibold truncate">ShortLink</div>
-              <div className="text-xs text-slate-500 truncate">
+              <div className="text-sm font-semibold truncate text-white">
+                ShortLink
+              </div>
+              <div className="text-xs text-muted-foreground truncate">
                 Share and track
               </div>
             </div>
@@ -76,7 +78,7 @@ const SidebarContent = ({
         {isMobile ? (
           <button
             onClick={() => setIsMobileOpen(false)}
-            className="flex size-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+            className="flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
             aria-label="Close sidebar"
           >
             <XIcon className="size-4" />
@@ -84,7 +86,7 @@ const SidebarContent = ({
         ) : (
           <button
             onClick={() => setIsCollapsed(!collapsed)}
-            className="hidden size-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-950 lg:flex"
+            className="hidden size-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-accent hover:text-foreground lg:flex"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             <MenuIcon className="size-4" />
@@ -106,8 +108,8 @@ const SidebarContent = ({
               className={cn(
                 'flex h-9 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-all duration-200',
                 isActive
-                  ? 'bg-teal-50 text-teal-600'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
+                  ? 'bg-teal-500/10 text-teal-400 font-semibold'
+                  : 'text-muted-foreground hover:bg-accent hover:text-foreground',
                 collapsed ? 'justify-center px-0' : '',
               )}
               title={collapsed ? item.label : undefined}
@@ -115,7 +117,7 @@ const SidebarContent = ({
               <item.icon
                 className={cn(
                   'size-4 shrink-0',
-                  isActive ? 'text-teal-600' : 'text-slate-500',
+                  isActive ? 'text-teal-400' : 'text-muted-foreground',
                 )}
               />
               {!collapsed && (
@@ -129,15 +131,19 @@ const SidebarContent = ({
       </nav>
 
       {/* Sidebar Footer */}
-      <div className="border-t border-slate-200 p-4">
+      <div className="border-t border-border p-4">
         {collapsed ? (
           <div className="flex justify-center">
             <UserAvatar user={user} size="sm" />
           </div>
         ) : (
-          <div className="rounded-lg bg-slate-100 p-3 overflow-hidden animate-in fade-in duration-300">
-            <div className="truncate text-sm font-medium">{user.name}</div>
-            <div className="truncate text-xs text-slate-500">{user.email}</div>
+          <div className="rounded-lg bg-muted/30 p-3 overflow-hidden animate-in fade-in duration-300 border border-border/50">
+            <div className="truncate text-sm font-medium text-foreground">
+              {user.name}
+            </div>
+            <div className="truncate text-xs text-muted-foreground">
+              {user.email}
+            </div>
           </div>
         )}
       </div>
@@ -157,17 +163,23 @@ export function DashboardShell({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 flex">
+    <div className="min-h-screen bg-background text-foreground flex relative">
+      {/* Background gradients wrapper */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] size-[500px] rounded-full bg-teal-500/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] size-[500px] rounded-full bg-violet-500/10 blur-[120px]" />
+      </div>
+
       {/* Mobile Drawer Sidebar */}
       {isMobileOpen && (
         <>
           {/* Backdrop overlay */}
           <div
             onClick={() => setIsMobileOpen(false)}
-            className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs transition-opacity lg:hidden"
+            className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs transition-opacity lg:hidden"
           />
           {/* Mobile Sidebar Content */}
-          <aside className="fixed inset-y-0 left-0 z-50 w-[260px] border-r border-slate-200 shadow-xl lg:hidden animate-in slide-in-from-left duration-300">
+          <aside className="fixed inset-y-0 left-0 z-50 w-[260px] border-r border-border shadow-xl lg:hidden animate-in slide-in-from-left duration-300">
             <SidebarContent
               user={user}
               pathname={pathname}
@@ -182,7 +194,7 @@ export function DashboardShell({
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          'hidden border-r border-slate-200 bg-white lg:flex lg:flex-col h-screen sticky top-0 transition-all duration-300 ease-in-out shrink-0',
+          'hidden border-r border-border bg-card lg:flex lg:flex-col h-screen sticky top-0 transition-all duration-300 ease-in-out shrink-0',
           isCollapsed ? 'w-[72px]' : 'w-[260px]',
         )}
       >
@@ -197,18 +209,20 @@ export function DashboardShell({
 
       {/* Main Content Area */}
       <div className="flex flex-1 min-w-0 flex-col">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-4 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-border bg-background/80 px-4 backdrop-blur sm:px-6">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setIsMobileOpen(true)}
-              className="flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-950 lg:hidden"
+              className="flex size-9 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
               aria-label="Open sidebar"
             >
               <MenuIcon className="size-5" />
             </button>
             <div className="min-w-0">
-              <div className="truncate text-sm font-medium">{user.name}</div>
-              <div className="truncate text-xs text-slate-500">
+              <div className="truncate text-sm font-medium text-foreground">
+                {user.name}
+              </div>
+              <div className="truncate text-xs text-muted-foreground">
                 {user.email}
               </div>
             </div>
@@ -218,7 +232,7 @@ export function DashboardShell({
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950"
+                className="inline-flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 aria-label="Sign out"
               >
                 <LogOutIcon className="size-4" />

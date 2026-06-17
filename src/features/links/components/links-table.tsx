@@ -28,13 +28,13 @@ type LinksTableProps = {
 export function LinksTable({ links }: LinksTableProps) {
   if (!links.length) {
     return (
-      <Empty className="min-h-72 rounded-lg border border-dashed border-slate-300 bg-white">
+      <Empty className="min-h-72 rounded-lg border border-dashed border-border bg-card">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <ExternalLinkIcon />
           </EmptyMedia>
-          <EmptyTitle>No links found</EmptyTitle>
-          <EmptyDescription>
+          <EmptyTitle className="text-white">No links found</EmptyTitle>
+          <EmptyDescription className="text-muted-foreground">
             Create a short link or adjust the current filters.
           </EmptyDescription>
         </EmptyHeader>
@@ -43,26 +43,41 @@ export function LinksTable({ links }: LinksTableProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <Table>
         <TableHeader>
-          <TableRow className="bg-slate-50 hover:bg-slate-50">
-            <TableHead>Short link</TableHead>
-            <TableHead>Destination</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Clicks</TableHead>
-            <TableHead>Expires</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+          <TableRow className="bg-muted/40 hover:bg-muted/40 border-border">
+            <TableHead className="text-muted-foreground font-semibold">
+              Short link
+            </TableHead>
+            <TableHead className="text-muted-foreground font-semibold">
+              Destination
+            </TableHead>
+            <TableHead className="text-muted-foreground font-semibold">
+              Status
+            </TableHead>
+            <TableHead className="text-muted-foreground font-semibold">
+              Clicks
+            </TableHead>
+            <TableHead className="text-muted-foreground font-semibold">
+              Expires
+            </TableHead>
+            <TableHead className="text-right text-muted-foreground font-semibold">
+              Actions
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {links.map((link, index) => (
-            <TableRow key={`${link.id}-${link.shortCode}-${index}`}>
+            <TableRow
+              key={`${link.id}-${link.shortCode}-${index}`}
+              className="border-border hover:bg-muted/20"
+            >
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/links/${link.id}`}
-                    className="font-medium text-teal-700 underline-offset-4 hover:underline"
+                    className="font-medium text-teal-400 underline-offset-4 hover:underline"
                   >
                     /{link.shortCode}
                   </Link>
@@ -71,10 +86,10 @@ export function LinksTable({ links }: LinksTableProps) {
               </TableCell>
               <TableCell>
                 <div className="max-w-[360px]">
-                  <div className="truncate font-medium">
+                  <div className="truncate font-medium text-foreground">
                     {getUrlHost(link.originalUrl)}
                   </div>
-                  <div className="truncate text-xs text-slate-500">
+                  <div className="truncate text-xs text-muted-foreground">
                     {truncateMiddle(link.originalUrl, 64)}
                   </div>
                 </div>
@@ -82,13 +97,17 @@ export function LinksTable({ links }: LinksTableProps) {
               <TableCell>
                 <StatusPill status={link.status} />
               </TableCell>
-              <TableCell>{formatNumber(link.clickCount)}</TableCell>
-              <TableCell>{formatDate(link.expiresAt)}</TableCell>
+              <TableCell className="text-foreground">
+                {formatNumber(link.clickCount)}
+              </TableCell>
+              <TableCell className="text-muted-foreground">
+                {formatDate(link.expiresAt)}
+              </TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
                   <Link
                     href={`/links/${link.id}/analytics`}
-                    className="inline-flex size-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
+                    className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     aria-label="Open analytics"
                     title="Open analytics"
                   >
@@ -98,7 +117,7 @@ export function LinksTable({ links }: LinksTableProps) {
                     href={link.shortUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex size-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
+                    className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     aria-label="Open short link"
                     title="Open short link"
                   >

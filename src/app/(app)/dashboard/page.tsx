@@ -41,33 +41,35 @@ export default function DashboardPage() {
       label: 'Total links',
       value: dashboardAnalytics.totalLinks,
       icon: LinkIcon,
-      tone: 'text-teal-700 bg-teal-50',
+      tone: 'text-teal-400 bg-teal-950/20',
     },
     {
       label: 'Active links',
       value: dashboardAnalytics.activeLinks,
       icon: BarChart3Icon,
-      tone: 'text-blue-700 bg-blue-50',
+      tone: 'text-blue-400 bg-blue-950/20',
     },
     {
       label: 'Total clicks',
       value: dashboardAnalytics.totalClicks,
       icon: MousePointerClickIcon,
-      tone: 'text-amber-700 bg-amber-50',
+      tone: 'text-amber-400 bg-amber-950/20',
     },
     {
       label: 'Unique visitors',
       value: dashboardAnalytics.uniqueVisitors,
       icon: UsersIcon,
-      tone: 'text-rose-700 bg-rose-50',
+      tone: 'text-rose-400 bg-rose-950/20',
     },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-normal">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-semibold tracking-normal text-white">
+          Dashboard
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Overview of link activity and recent destinations.
         </p>
       </div>
@@ -76,10 +78,10 @@ export default function DashboardPage() {
         {metrics.map((metric) => (
           <div
             key={metric.label}
-            className="rounded-lg border border-slate-200 bg-white p-4"
+            className="rounded-lg border border-border bg-card p-4"
           >
             <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-medium text-slate-500">
+              <span className="text-sm font-medium text-muted-foreground">
                 {metric.label}
               </span>
               <span
@@ -88,7 +90,7 @@ export default function DashboardPage() {
                 <metric.icon className="size-4" />
               </span>
             </div>
-            <div className="mt-4 text-3xl font-semibold">
+            <div className="mt-4 text-3xl font-semibold text-white">
               {formatNumber(metric.value)}
             </div>
           </div>
@@ -96,20 +98,22 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="rounded-lg border border-slate-200 bg-white p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="mb-4">
-            <h2 className="text-base font-semibold">Clicks over time</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="text-base font-semibold text-white">
+              Clicks over time
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               Daily activity across your short links.
             </p>
           </div>
           <ClicksChart data={dashboardAnalytics.clicksOverTime} />
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="mb-4">
-            <h2 className="text-base font-semibold">Top links</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="text-base font-semibold text-white">Top links</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               Destinations with the most clicks.
             </p>
           </div>
@@ -119,23 +123,23 @@ export default function DashboardPage() {
                 <Link
                   key={`${link.id}-${link.shortCode}-${index}`}
                   href={`/links/${link.id}/analytics`}
-                  className="block rounded-lg border border-slate-200 p-3 transition-colors hover:bg-slate-50"
+                  className="block rounded-lg border border-border p-3 transition-colors hover:bg-muted/30"
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <span className="truncate text-sm font-medium">
+                    <span className="truncate text-sm font-medium text-foreground">
                       /{link.shortCode}
                     </span>
-                    <span className="text-sm text-slate-500">
+                    <span className="text-sm text-muted-foreground">
                       {formatNumber(link.clicks)}
                     </span>
                   </div>
-                  <div className="mt-1 truncate text-xs text-slate-500">
+                  <div className="mt-1 truncate text-xs text-muted-foreground">
                     {link.originalUrl}
                   </div>
                 </Link>
               ))
             ) : (
-              <p className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">
+              <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
                 No click data yet.
               </p>
             )}
@@ -145,10 +149,10 @@ export default function DashboardPage() {
 
       <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold">Recent links</h2>
+          <h2 className="text-base font-semibold text-white">Recent links</h2>
           <Link
             href="/links"
-            className="text-sm font-medium text-teal-700 underline-offset-4 hover:underline"
+            className="text-sm font-medium text-teal-400 underline-offset-4 hover:underline"
           >
             View all
           </Link>
