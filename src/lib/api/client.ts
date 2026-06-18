@@ -26,11 +26,7 @@ export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
 }
 
 export function getApiBaseUrl() {
-  return (
-    process.env.API_BASE_URL ??
-    process.env.NEXT_PUBLIC_API_BASE_URL ??
-    'http://localhost:3000/api/v1'
-  ).replace(/\/$/, '');
+  return process.env.NEXT_PUBLIC_API_BASE_URL!.replace(/\/$/, '');
 }
 
 export interface ApiResponse<T = unknown> {
@@ -87,11 +83,7 @@ export async function apiRequest<T = unknown>(
   const payload = await readPayload(response);
 
   if (!response.ok) {
-    throw new ApiError(
-      getErrorMessage(payload, response),
-      response.status,
-      payload,
-    );
+    throw new ApiError(getErrorMessage(payload, response), response.status, payload);
   }
 
   // Forward Set-Cookie response headers from backend to browser if on the server
