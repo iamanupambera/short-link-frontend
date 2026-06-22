@@ -1,3 +1,16 @@
+import { publicEnv } from '@/env';
+import type { AuthSession } from '@/features/auth/types/auth.types';
+
+const REFRESH_TOKEN_PATH = '/auth/refresh-token';
+const TOKEN_REFRESHED_EVENT = 'shortlink:token-refreshed';
+
+type SessionPersister = (session: Omit<AuthSession, 'expiresAt'>) => Promise<void>;
+let _persistSession: SessionPersister | null = null;
+
+export function registerSessionPersister(persister: SessionPersister) {
+  _persistSession = persister;
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -23,10 +36,11 @@ export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
   body?: BodyInit | ApiRecord;
   query?: QueryParams;
   token?: string | null;
+  skipAuthRefresh?: boolean;
 }
 
 export function getApiBaseUrl() {
-  return process.env.NEXT_PUBLIC_API_BASE_URL!.replace(/\/$/, '');
+  return publicEnv.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, '');
 }
 
 export interface ApiResponse<T = unknown> {
@@ -38,7 +52,7 @@ export interface ApiResponse<T = unknown> {
 
 export async function apiRequest<T = unknown>(
   path: string,
-  { body, headers, query, token, ...init }: ApiRequestOptions = {},
+  { body, headers, query, token, skipAuthRefresh, ...init }: ApiRequestOptions = {},
 ): Promise<ApiResponse<T>> {
   const requestHeaders = new Headers(headers);
   const requestUrl = buildUrl(path, query);
@@ -53,22 +67,7 @@ export async function apiRequest<T = unknown>(
     requestHeaders.set('Authorization', `Bearer ${token}`);
   }
 
-  // Forward incoming browser request cookies to backend if on the server
-  if (typeof window === 'undefined') {
-    try {
-      const { cookies } = await import('next/headers');
-      const cookieStore = await cookies();
-      const cookieHeader = cookieStore
-        .getAll()
-        .map((c) => `${c.name}=${c.value}`)
-        .join('; ');
-      if (cookieHeader) {
-        requestHeaders.set('Cookie', cookieHeader);
-      }
-    } catch {
-      // Ignored outside of request context (e.g. static generation)
-    }
-  }
+  await forwardRequestCookies(requestHeaders);
 
   if (body !== undefined) {
     if (isPlainObject(body)) {
@@ -79,14 +78,96 @@ export async function apiRequest<T = unknown>(
     }
   }
 
-  const response = await fetch(requestUrl, requestInit);
-  const payload = await readPayload(response);
+  let response = await fetch(requestUrl, requestInit);
+  let payload = await readPayload(response);
+
+  if (
+    shouldRefreshAuth({
+      path,
+      response,
+      skipAuthRefresh,
+      token,
+    })
+  ) {
+    const refreshedSession = await refreshAccessToken();
+
+    if (refreshedSession) {
+      requestHeaders.set('Authorization', `Bearer ${refreshedSession.accessToken}`);
+      response = await fetch(requestUrl, requestInit);
+      payload = await readPayload(response);
+    }
+  }
 
   if (!response.ok) {
     throw new ApiError(getErrorMessage(payload, response), response.status, payload);
   }
 
-  // Forward Set-Cookie response headers from backend to browser if on the server
+  await forwardResponseCookies(response);
+
+  return {
+    ...(isRecord(payload) ? payload : {}),
+    headers: response.headers,
+  } as ApiResponse<T>;
+}
+
+export function getErrorMessage(error: unknown, response?: Response) {
+  if (isRecord(error)) {
+    const message = error.message ?? error.error;
+
+    if (Array.isArray(message)) {
+      return message.join(', ');
+    }
+
+    if (typeof message === 'string') {
+      return message;
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return response?.statusText || 'Something went wrong. Please try again.';
+}
+
+export function unwrapData<T>(value: ApiResponse<T> | unknown): T {
+  if (isRecord(value)) {
+    if ('response' in value) {
+      return value.response as T;
+    }
+    if ('data' in value) {
+      return value.data as T;
+    }
+  }
+
+  return value as T;
+}
+
+export function isRecord(value: unknown): value is ApiRecord {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+async function forwardRequestCookies(headers: Headers) {
+  if (typeof window !== 'undefined') {
+    return;
+  }
+
+  try {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join('; ');
+    if (cookieHeader) {
+      headers.set('Cookie', cookieHeader);
+    }
+  } catch {
+    // Ignored outside of request context (e.g. static generation)
+  }
+}
+
+async function forwardResponseCookies(response: Response) {
   if (typeof window === 'undefined') {
     try {
       const setCookies = response.headers.getSetCookie?.() || [];
@@ -144,48 +225,106 @@ export async function apiRequest<T = unknown>(
       // Ignored outside of request context
     }
   }
+}
+
+function shouldRefreshAuth({
+  path,
+  response,
+  skipAuthRefresh,
+  token,
+}: {
+  path: string;
+  response: Response;
+  skipAuthRefresh?: boolean;
+  token?: string | null;
+}) {
+  return (
+    !skipAuthRefresh &&
+    Boolean(token) &&
+    path !== REFRESH_TOKEN_PATH &&
+    (response.status === 401 || response.status === 403)
+  );
+}
+
+async function refreshAccessToken() {
+  try {
+    const headers = new Headers();
+    await forwardRequestCookies(headers);
+
+    const response = await fetch(buildUrl(REFRESH_TOKEN_PATH), {
+      headers,
+      method: 'GET',
+      cache: 'no-store',
+      credentials: 'include',
+    });
+    const payload = await readPayload(response);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    await forwardResponseCookies(response);
+
+    const session = readAuthSession(payload);
+    if (!session) {
+      return null;
+    }
+
+    await persistRefreshedSession(session);
+    notifyTokenRefreshed(session);
+
+    return session;
+  } catch {
+    return null;
+  }
+}
+
+function readAuthSession(value: unknown): Omit<AuthSession, 'expiresAt'> | null {
+  const payload = unwrapData(value);
+  const record = isRecord(payload) ? payload : {};
+  const accessToken = readString(record, ['accessToken', 'access_token', 'token']);
+  const user = isRecord(record.user) ? record.user : null;
+
+  if (!accessToken || !user) {
+    return null;
+  }
 
   return {
-    ...(isRecord(payload) ? payload : {}),
-    headers: response.headers,
-  } as ApiResponse<T>;
+    accessToken,
+    user: user as unknown as AuthSession['user'],
+  };
 }
 
-export function getErrorMessage(error: unknown, response?: Response) {
-  if (isRecord(error)) {
-    const message = error.message ?? error.error;
+async function persistRefreshedSession(session: Omit<AuthSession, 'expiresAt'>) {
+  if (typeof window !== 'undefined' || !_persistSession) {
+    return;
+  }
 
-    if (Array.isArray(message)) {
-      return message.join(', ');
-    }
+  await _persistSession(session);
+}
 
-    if (typeof message === 'string') {
-      return message;
+function notifyTokenRefreshed(session: Omit<AuthSession, 'expiresAt'>) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.dispatchEvent(
+    new CustomEvent(TOKEN_REFRESHED_EVENT, {
+      detail: session,
+    }),
+  );
+}
+
+function readString(record: ApiRecord, keys: string[]) {
+  for (const key of keys) {
+    const value = record[key];
+
+    if (typeof value === 'string' && value.trim()) {
+      return value;
     }
   }
 
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return response?.statusText || 'Something went wrong. Please try again.';
-}
-
-export function unwrapData<T>(value: ApiResponse<T> | unknown): T {
-  if (isRecord(value)) {
-    if ('response' in value) {
-      return value.response as T;
-    }
-    if ('data' in value) {
-      return value.data as T;
-    }
-  }
-
-  return value as T;
-}
-
-export function isRecord(value: unknown): value is ApiRecord {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return undefined;
 }
 
 function buildUrl(path: string, query?: QueryParams) {

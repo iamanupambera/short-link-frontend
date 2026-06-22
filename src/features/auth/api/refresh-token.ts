@@ -1,5 +1,7 @@
 import { apiRequest } from '@/lib/api/client';
 import { apiEndpoints } from '@/lib/api/endpoints';
+import { normalizeAuthSession } from './normalize';
+import type { AuthSession } from '../types/auth.types';
 import type { User } from '@/features/profile/types/user.types';
 
 export interface RefreshTokenResponse {
@@ -7,9 +9,8 @@ export interface RefreshTokenResponse {
   user: User;
 }
 
-export async function refreshTokenRequest(options?: { token?: string | null }) {
-  return apiRequest<RefreshTokenResponse>(apiEndpoints.auth.refreshToken, {
-    method: 'POST',
-    token: options?.token,
-  });
+export async function refreshTokenRequest(): Promise<AuthSession> {
+  const response = await apiRequest<RefreshTokenResponse>(apiEndpoints.auth.refreshToken);
+
+  return normalizeAuthSession(response);
 }

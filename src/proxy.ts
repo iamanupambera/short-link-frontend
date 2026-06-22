@@ -4,12 +4,13 @@ import type { NextRequest } from 'next/server';
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = request.cookies.has('shortlink.session');
+  const hasRefreshToken = request.cookies.has('refresh-token');
+  const canRefreshSession = hasSession || hasRefreshToken;
 
   const isAuthPath = pathname.includes('auth');
-  const isProtectedPath =
-    !isAuthPath && pathname !== '/' && !pathname.includes('.');
+  const isProtectedPath = !isAuthPath && pathname !== '/' && !pathname.includes('.');
 
-  if (isProtectedPath && !hasSession) {
+  if (isProtectedPath && !canRefreshSession) {
     const loginUrl = new URL('/auth/login', request.url);
     // Optionally: loginUrl.searchParams.set('redirectTo', pathname);
     return NextResponse.redirect(loginUrl);

@@ -4,6 +4,7 @@ import { resetPasswordSchema } from '../schemas/reset-password.schema';
 import { resetPasswordRequest } from '../api/reset-password';
 import { getErrorMessage } from '@/lib/api/client';
 import type { FormActionState } from '../types/auth.types';
+import { readFormValue } from './form-data';
 
 export async function resetPasswordAction(
   _state: FormActionState,
@@ -39,9 +40,4 @@ export async function resetPasswordAction(
       message: getErrorMessage(error),
     };
   }
-}
-
-function readFormValue(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return typeof value === 'string' ? value.trim() : '';
 }

@@ -4,6 +4,7 @@ import { verifyEmailSchema } from '../schemas/verify-email.schema';
 import { resendVerificationRequest } from '../api/resend-verification';
 import { getErrorMessage } from '@/lib/api/client';
 import type { FormActionState } from '../types/auth.types';
+import { readFormValue } from './form-data';
 
 export async function resendVerificationAction(
   _state: FormActionState,
@@ -32,9 +33,4 @@ export async function resendVerificationAction(
       message: getErrorMessage(error),
     };
   }
-}
-
-function readFormValue(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return typeof value === 'string' ? value.trim() : '';
 }

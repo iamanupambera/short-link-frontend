@@ -33,6 +33,7 @@ export const createAuthStore = () =>
       })),
       {
         name: AUTH_STORE_KEY,
+        partialize: (state) => ({ hydrated: state.hydrated }),
         onRehydrateStorage: () => (state) => {
           state?.setHydrated();
         },

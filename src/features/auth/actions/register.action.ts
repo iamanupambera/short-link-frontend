@@ -7,6 +7,7 @@ import { registerRequest } from '../api/register';
 import { getErrorMessage } from '@/lib/api/client';
 import { setSession } from '@/lib/auth/session';
 import type { FormActionState } from '../types/auth.types';
+import { readFormValue } from './form-data';
 
 export async function registerAction(
   _state: FormActionState,
@@ -50,9 +51,4 @@ export async function registerAction(
       message: getErrorMessage(error),
     };
   }
-}
-
-function readFormValue(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return typeof value === 'string' ? value.trim() : '';
 }

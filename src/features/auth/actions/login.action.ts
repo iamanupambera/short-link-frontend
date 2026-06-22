@@ -7,6 +7,7 @@ import { loginRequest } from '../api/login';
 import { getErrorMessage } from '@/lib/api/client';
 import { setSession } from '@/lib/auth/session';
 import type { FormActionState } from '../types/auth.types';
+import { readFormValue } from './form-data';
 
 export async function loginAction(
   _state: FormActionState,
@@ -41,9 +42,4 @@ export async function loginAction(
   await setSession(session);
   revalidatePath('/', 'layout');
   redirect('/dashboard');
-}
-
-function readFormValue(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return typeof value === 'string' ? value.trim() : '';
 }

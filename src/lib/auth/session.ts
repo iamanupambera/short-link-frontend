@@ -1,11 +1,8 @@
 import 'server-only';
 
-import {
-  createCipheriv,
-  createDecipheriv,
-  createHash,
-  randomBytes,
-} from 'crypto';
+import { serverEnv } from '@/env';
+import { refreshTokenRequest } from '@/features/auth/api/refresh-token';
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'crypto';
 import { cookies } from 'next/headers';
 import type { AuthSession } from '@/features/auth/types/auth.types';
 import { isRecord } from '@/lib/api/client';
@@ -18,13 +15,13 @@ export async function getSession(): Promise<AuthSession | null> {
   const encryptedSession = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
   if (!encryptedSession) {
-    return null;
+    return refreshSession();
   }
 
   const session = decryptSession(encryptedSession);
 
   if (!session || Date.parse(session.expiresAt) <= Date.now()) {
-    return null;
+    return refreshSession();
   }
 
   return session;
@@ -65,13 +62,20 @@ export async function destroySession() {
   cookieStore.delete(SESSION_COOKIE_NAME);
 }
 
+async function refreshSession(): Promise<AuthSession | null> {
+  try {
+    const session = await refreshTokenRequest();
+    await setSession(session);
+    return session;
+  } catch {
+    return null;
+  }
+}
+
 function encryptSession(session: AuthSession) {
   const iv = randomBytes(12);
   const cipher = createCipheriv('aes-256-gcm', getEncryptionKey(), iv);
-  const encrypted = Buffer.concat([
-    cipher.update(JSON.stringify(session), 'utf8'),
-    cipher.final(),
-  ]);
+  const encrypted = Buffer.concat([cipher.update(JSON.stringify(session), 'utf8'), cipher.final()]);
   const tag = cipher.getAuthTag();
 
   return [
@@ -109,15 +113,9 @@ function decryptSession(value: string): AuthSession | null {
 }
 
 function getEncryptionKey() {
-  const secret = process.env.SESSION_SECRET;
+  const { SESSION_SECRET: secret } = serverEnv();
 
-  if (!secret && process.env.NODE_ENV === 'production') {
-    throw new Error('SESSION_SECRET is required in production.');
-  }
-
-  return createHash('sha256')
-    .update(secret ?? 'shortlink-dev-session-secret-change-me')
-    .digest();
+  return createHash('sha256').update(secret).digest();
 }
 
 function isAuthSession(value: unknown): value is AuthSession {

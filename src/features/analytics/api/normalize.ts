@@ -1,4 +1,5 @@
 import { isRecord } from '@/lib/api/client';
+import { readNumber, readString } from '@/lib/api/normalize';
 import type {
   BreakdownPoint,
   DashboardAnalytics,
@@ -30,9 +31,7 @@ export function readBreakdown(value: unknown): BreakdownPoint[] {
     const record = isRecord(item) ? item : {};
 
     return {
-      name:
-        readString(record, ['name', 'label', 'country', 'browser', 'device']) ??
-        'Unknown',
+      name: readString(record, ['name', 'label', 'country', 'browser', 'device']) ?? 'Unknown',
       value: readNumber(record, ['value', 'count', 'clicks']) ?? 0,
     };
   });
@@ -53,32 +52,4 @@ export function readTopLinks(value: unknown): DashboardAnalytics['topLinks'] {
       clicks: readNumber(record, ['clicks', 'totalClicks']) ?? 0,
     };
   });
-}
-
-export function readString(record: Record<string, unknown>, keys: string[]) {
-  for (const key of keys) {
-    const value = record[key];
-
-    if (typeof value === 'string' && value.trim()) {
-      return value;
-    }
-  }
-
-  return undefined;
-}
-
-export function readNumber(record: Record<string, unknown>, keys: string[]) {
-  for (const key of keys) {
-    const value = record[key];
-
-    if (typeof value === 'number') {
-      return value;
-    }
-
-    if (typeof value === 'string' && Number.isFinite(Number(value))) {
-      return Number(value);
-    }
-  }
-
-  return undefined;
 }
